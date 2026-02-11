@@ -1,0 +1,1558 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#d81e3a" />
+  <title>APPLE: Active Perception Policy Learning</title>
+  <meta name="description" content="APPLE: Active Perception Policy Learning. Official project page." />
+
+  <!-- Social Media Meta Tags -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://timschneider42.github.io/apple/" />
+  <meta property="og:title" content="APPLE: Active Perception Policy Learning" />
+  <meta property="og:description" content="APPLE: Active Perception Policy Learning. Official project page." />
+  <meta property="og:image" content="https://timschneider42.github.io/apple/assets/apple-logo.png" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="APPLE: Active Perception Policy Learning" />
+  <meta name="twitter:description" content="APPLE: Active Perception Policy Learning. Official project page." />
+  <meta name="twitter:image" content="https://timschneider42.github.io/apple/assets/apple-logo.png" />
+  <link rel="icon" type="image/png" href="assets/apple-logo.png" />
+
+  <style>
+    :root {
+      /* light-friendly base (for white-background gifs) */
+      --bg0: #fff7f8;
+      --bg1: #fffaf2;
+      --ink: #1c1420;
+      --muted: rgba(28, 20, 32, .72);
+
+      --card: rgba(255, 255, 255, .82);
+      --stroke: rgba(28, 20, 32, .12);
+      --shadow: 0 18px 60px rgba(28, 20, 32, .14);
+
+      /* apple palette (less rainbow, more red) */
+      --apple: #d81e3a;
+      --apple2: #ff3b30;
+      --blush: #ff5aa5;
+      --seed: #2a1b24;
+      --leaf: #2bb673;
+      --honey: #ff8a00;
+
+      --radius: 22px;
+      --radius2: 28px;
+      --max: 1120px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(900px 520px at 18% -10%, rgba(255, 59, 48, .20), transparent 60%),
+        radial-gradient(900px 520px at 88% 10%, rgba(255, 90, 165, .14), transparent 60%),
+        radial-gradient(900px 520px at 40% 115%, rgba(43, 182, 115, .10), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x: hidden;
+    }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 22px 18px 76px;
+    }
+
+    a {
+      color: inherit
+    }
+
+    /* subtle grain (works on light bg) */
+    .grain {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+      opacity: .08;
+    }
+
+    .topbar {
+      display: block;
+      padding: 10px 0 14px;
+      position: sticky;
+      top: 0;
+      width: 100%;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(180deg, rgba(255, 247, 248, .88), rgba(255, 247, 248, .62));
+      z-index: 20;
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .brand h1 {
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin: 0;
+      color: var(--apple);
+    }
+
+    .brand .sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .70);
+      border: 1px solid rgba(28, 20, 32, .10);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      font-size: 13px;
+    }
+
+    .pill:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, .92);
+      border-color: rgba(28, 20, 32, .16);
+    }
+
+    .card {
+      border-radius: var(--radius2);
+      background: var(--card);
+      border: 1px solid rgba(28, 20, 32, .10);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* blobs (light-mode friendly) */
+    .blob {
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      filter: blur(55px);
+      opacity: .20;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+      animation: float 10s ease-in-out infinite;
+    }
+
+    .blob.b1 {
+      left: -240px;
+      top: -260px;
+      background: radial-gradient(circle at 35% 35%, rgba(255, 59, 48, .65), rgba(255, 138, 0, .15) 62%, transparent 72%);
+    }
+
+    .blob.b2 {
+      right: -280px;
+      top: 120px;
+      background: radial-gradient(circle at 35% 35%, rgba(255, 90, 165, .55), rgba(216, 30, 58, .14) 62%, transparent 72%);
+      animation-duration: 12s;
+    }
+
+    .blob.b3 {
+      left: 220px;
+      bottom: -300px;
+      background: radial-gradient(circle at 40% 40%, rgba(43, 182, 115, .50), rgba(255, 90, 165, .10) 64%, transparent 74%);
+      animation-duration: 14s;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translate3d(0, 0, 0) scale(1)
+      }
+
+      50% {
+        transform: translate3d(0, 18px, 0) scale(1.03)
+      }
+    }
+
+    .heroBox {
+      padding: 24px;
+    }
+
+    .authorBlock {
+      margin-top: 24px;
+      margin-bottom: 24px;
+    }
+
+    .authors {
+      width: 100%;
+    }
+
+    .author-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .author-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 140px;
+    }
+
+    .author-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid white;
+      box-shadow: 0 8px 20px rgba(28, 20, 32, .12);
+      margin-bottom: 12px;
+      transition: transform .2s ease, box-shadow .2s ease;
+      background-color: var(--bg1);
+    }
+
+    .author-item:hover .author-avatar {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(216, 30, 58, .18);
+    }
+
+    .author {
+      font-weight: 500;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color .15s;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    .author:hover {
+      border-color: var(--apple);
+    }
+
+    /* Video Embed */
+    .video-section {
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+
+    .video-wrapper {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      height: 0;
+      padding-bottom: 56.25%;
+      overflow: hidden;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      background: #000;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .affils {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* Center align items */
+      text-align: center;
+      /* Center text */
+      gap: 4px;
+    }
+
+    .affilIdx {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--apple);
+      background: rgba(209, 27, 58, .08);
+      border: 1px solid rgba(209, 27, 58, .18);
+    }
+
+    .metaRow {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .metaPill {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted2);
+      background: rgba(255, 255, 255, .86);
+      border: 1px solid var(--stroke);
+      padding: 7px 10px;
+      border-radius: 999px;
+    }
+
+    /* One-liner box (same as before, but tuned) */
+    .oneLiner {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .88);
+      border: 1px solid var(--stroke);
+      box-shadow: 0 6px 14px rgba(20, 22, 30, .05);
+    }
+
+    .oneLinerTitle {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted2);
+      margin-bottom: 8px;
+    }
+
+    .oneLinerText {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+
+    .kdot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 55%),
+        linear-gradient(90deg, var(--apple), var(--apple2));
+      box-shadow: 0 0 22px rgba(216, 30, 58, .20);
+    }
+
+    .title {
+      margin: 14px 0 10px;
+      font-size: 48px;
+      line-height: 1.05;
+      letter-spacing: -.03em;
+      color: var(--seed);
+    }
+
+    @media (max-width:520px) {
+      .title {
+        font-size: 40px
+      }
+    }
+
+    .title span {
+      background: linear-gradient(90deg, var(--apple), var(--apple2), var(--blush));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 14px 24px rgba(216, 30, 58, .14));
+    }
+
+    .blurb {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: 62ch;
+    }
+
+    .heroBox .blurb {
+      max-width: 780px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: justify;
+    }
+
+    .ctaRow {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      justify-content: center;
+      /* Center buttons */
+    }
+
+    .btn {
+      border: 1px solid rgba(28, 20, 32, .12);
+      background: rgba(255, 255, 255, .72);
+      padding: 11px 14px;
+      border-radius: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      width: 100px;
+      justify-content: center;
+      gap: 10px;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, .92);
+      border-color: rgba(28, 20, 32, .18);
+    }
+
+    .btn.primary {
+      border-color: rgba(216, 30, 58, .26);
+      background: linear-gradient(90deg, rgba(216, 30, 58, .18), rgba(255, 59, 48, .14), rgba(255, 90, 165, .12));
+      box-shadow: 0 18px 55px rgba(216, 30, 58, .14);
+    }
+
+    .heroRight {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .media {
+      border-radius: 18px;
+      border: 1px solid rgba(28, 20, 32, .10);
+      background: rgba(255, 255, 255, .70);
+      overflow: hidden;
+      position: relative;
+      min-height: 240px;
+    }
+
+    .media img,
+    .media video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .mediaBadge {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .72);
+      border: 1px solid rgba(28, 20, 32, .12);
+      backdrop-filter: blur(12px);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      border-radius: 18px;
+      padding: 12px 12px;
+      background: rgba(255, 255, 255, .72);
+      border: 1px solid rgba(28, 20, 32, .10);
+    }
+
+    .stat .k {
+      font-size: 12px;
+      color: rgba(28, 20, 32, .65);
+      font-family: var(--mono);
+    }
+
+    .stat .v {
+      font-size: 16px;
+      margin-top: 6px;
+    }
+
+    .stat .v strong {
+      color: var(--apple);
+    }
+
+    .section {
+      margin-top: 14px;
+      padding: 20px;
+    }
+
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: -.01em;
+      color: var(--seed);
+    }
+
+    .section p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* spotlight carousel */
+    .spotGrid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    @media (max-width:980px) {
+      .spotGrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .spotMedia {
+      border-radius: 18px;
+      border: 1px solid rgba(28, 20, 32, .10);
+      background: rgba(255, 255, 255, .70);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .spotMedia img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .spotControls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(28, 20, 32, .10);
+      background: rgba(255, 255, 255, .72);
+    }
+
+    .chip {
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 9px 11px;
+      border: 3px solid rgba(28, 20, 32, .10);
+      background: rgba(255, 255, 255, .75);
+      font-size: 13px;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+
+    .chip:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, .92);
+      border-color: rgba(28, 20, 32, .16);
+    }
+
+    /* Default active style (for Task buttons). Policy buttons override this inline. */
+    .chip.active {
+      background: rgba(28, 20, 32, .08);
+      border-color: rgba(28, 20, 32, .25);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .spotText {
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .spotText strong {
+      color: var(--apple);
+    }
+
+    /* demos selector on TOP + method/baseline tabs */
+    .demoTop {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(28, 20, 32, .10);
+      background: rgba(255, 255, 255, .72);
+    }
+
+    .seg {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .seg label {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(28, 20, 32, .62);
+      margin-right: 6px;
+    }
+
+    select {
+      border-radius: 12px;
+      padding: 10px 10px;
+      border: 1px solid rgba(28, 20, 32, .12);
+      background: rgba(255, 255, 255, .92);
+      font-size: 14px;
+      color: var(--seed);
+      outline: none;
+    }
+
+    .tabRow {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .tab {
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 9px 12px;
+      border: 1px solid rgba(28, 20, 32, .10);
+      background: rgba(255, 255, 255, .75);
+      font-size: 13px;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      user-select: none;
+    }
+
+    .tab:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, .92);
+      border-color: rgba(28, 20, 32, .16);
+    }
+
+    .tab.active {
+      border-color: rgba(216, 30, 58, .26);
+      background: linear-gradient(90deg, rgba(216, 30, 58, .14), rgba(255, 59, 48, .10));
+      color: var(--seed);
+    }
+
+    .viewer {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 1000px) {
+      .viewer {
+        grid-template-columns: 1fr 1fr;
+        /* align-items: start; REMOVED to stretch by default */
+      }
+
+      .viewerMedia {
+        min-height: 360px;
+      }
+    }
+
+    .viewerPlot {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(28, 20, 32, .10);
+      background: white;
+      height: 100%;
+      min-height: 360px;
+      /* Match video min-height approx */
+      min-width: 0;
+    }
+
+    .viewerMedia {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(28, 20, 32, .10);
+      background: white;
+      /* important: makes white gifs look clean */
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .viewerMedia img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      /* IMPORTANT for white BG gifs + plots */
+      display: block;
+      background: white;
+    }
+
+    .caption {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(28, 20, 32, .10);
+      background: rgba(255, 255, 255, .75);
+      color: rgba(28, 20, 32, .78);
+    }
+
+    footer {
+      margin-top: 24px;
+      padding: 32px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      color: rgba(28, 20, 32, .64);
+      font-size: 13px;
+    }
+
+    .cite {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(28, 20, 32, .78);
+      background: rgba(255, 255, 255, .75);
+      border: 1px solid rgba(28, 20, 32, .10);
+      padding: 12px 14px;
+      border-radius: 18px;
+      overflow: auto;
+      white-space: pre;
+    }
+
+    /* spotlight list */
+    .spotList {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .spotItem {
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.4);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      color: var(--muted);
+      cursor: default;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .spotItem strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      transition: color .2s;
+    }
+
+    .spotItem.active {
+      background: #fff;
+      border-color: rgba(216, 30, 58, 0.15);
+      box-shadow: 0 8px 20px rgba(216, 30, 58, 0.06);
+      color: var(--ink);
+      transform: scale(1.02);
+    }
+
+    .spotItem.active strong {
+      color: var(--apple);
+    }
+
+    /* Custom BibTeX Highlighting */
+    .bib-type {
+      color: var(--apple);
+      font-weight: bold;
+    }
+
+    .bib-key {
+      color: var(--ink);
+      font-weight: bold;
+    }
+
+    .bib-field {
+      color: var(--apple2);
+    }
+
+    .bib-value {
+      color: var(--muted);
+    }
+  </style>
+
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+  <div class="grain"></div>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img class="logo" src="assets/apple-logo.png" alt="" />
+        <div>
+          <h1>APPLE</h1>
+          <div class="sub"><span style="color:var(--apple)"><b>A</b></span>ctive <span
+              style="color:var(--apple)"><b>P</b></span>erception <span style="color:var(--apple)"><b>P</b></span>olicy
+            <span style="color:var(--apple)"><b>L</b></span><span style="color:var(--apple)"><b>e</b></span>arning
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+  <div class="wrap" id="top">
+
+    <!-- HERO -->
+
+    <div class="card heroBox" id="top">
+      <div class="kicker"><span class="kdot"></span> ICLR 2026</div>
+
+      <h2 class="title">
+        <span>APPLE</span> Toward General Active Perception Via Reinforcement Learning
+      </h2>
+
+      <!-- AUTHORS + AFFILIATIONS -->
+      <div class="authorBlock">
+        <div class="authors">
+          <div class="author-container">
+            <div class="author-item">
+              <a href="https://www.ias.informatik.tu-darmstadt.de/Team/TimSchneider" target="_blank" rel="noreferrer">
+                <img src="img/authors/schneider.jpg" alt="Tim Schneider" class="author-avatar">
+              </a>
+              <a href="https://www.ias.informatik.tu-darmstadt.de/Team/TimSchneider" target="_blank" rel="noreferrer"
+                class="author">Tim Schneider<sup>1,2</sup></a>
+            </div>
+            <div class="author-item">
+              <a href="https://www.ias.informatik.tu-darmstadt.de/Team/CristianaMirandadeFarias" target="_blank"
+                rel="noreferrer">
+                <img src="img/authors/defarias.jpg" alt="Cristiana de Farias" class="author-avatar">
+              </a>
+              <a href="https://www.ias.informatik.tu-darmstadt.de/Team/CristianaMirandadeFarias" target="_blank"
+                rel="noreferrer" class="author">Cristiana de Farias<sup>1</sup></a>
+            </div>
+            <div class="author-item">
+              <a href="https://www.robertocalandra.com" target="_blank" rel="noreferrer">
+                <img src="img/authors/calandra.png" alt="Roberto Calandra" class="author-avatar">
+              </a>
+              <a href="https://www.robertocalandra.com" target="_blank" rel="noreferrer" class="author">Roberto
+                Calandra<sup>3</sup></a>
+            </div>
+            <div class="author-item">
+              <a href="http://perso.ec-lyon.fr/liming.chen/" target="_blank" rel="noreferrer">
+                <img src="img/authors/chen.gif" alt="Liming Chen" class="author-avatar">
+              </a>
+              <a href="http://perso.ec-lyon.fr/liming.chen/" target="_blank" rel="noreferrer" class="author">Liming
+                Chen<sup>2</sup></a>
+            </div>
+            <div class="author-item">
+              <a href="https://www.ias.informatik.tu-darmstadt.de/Team/JanPeters" target="_blank" rel="noreferrer">
+                <img src="img/authors/peters.jpg" alt="Jan Peters" class="author-avatar">
+              </a>
+              <a href="https://www.ias.informatik.tu-darmstadt.de/Team/JanPeters" target="_blank" rel="noreferrer"
+                class="author">Jan Peters<sup>1,4</sup></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="affils">
+          <div><span class="affilIdx">1</span> <a href="https://www.informatik.tu-darmstadt.de/" target="_blank"
+              rel="noreferrer">Department of Computer Science</a>, <a href="https://www.tu-darmstadt.de/"
+              target="_blank" rel="noreferrer">TU Darmstadt</a>, Germany</div>
+          <div><span class="affilIdx">2</span> <a href="https://liris.cnrs.fr/" target="_blank" rel="noreferrer">LIRIS,
+              CNRS UMR5205</a>, <a href="https://www.ec-lyon.fr/" target="_blank" rel="noreferrer">Ecole Centrale de
+              Lyon</a>, France. </div>
+          <div><span class="affilIdx">3</span> <a href="https://lasr.org/" target="_blank" rel="noreferrer">LASR
+              Lab</a> & <a href="https://ceti.one/" target="_blank" rel="noreferrer">CeTI</a>, <a
+              href="https://tu-dresden.de/" target="_blank" rel="noreferrer">TU Dresden</a>, Germany</div>
+          <div><span class="affilIdx">4</span> <a href="https://www.dfki.de/" target="_blank" rel="noreferrer">DFKI</a>,
+            <a href="https://hessian.ai/" target="_blank" rel="noreferrer">Hessian.AI</a>, <a
+              href="https://robotics-institute-germany.de/" target="_blank" rel="noreferrer">RIG</a>, and <a
+              href="https://www.tu-darmstadt.de/cogsci" target="_blank" rel="noreferrer">Centre for Cognitive
+              Science</a>, <a href="https://www.tu-darmstadt.de/" target="_blank" rel="noreferrer">TU Darmstadt</a>,
+            Germany.
+          </div>
+        </div>
+
+
+
+
+        <!-- LINKS -->
+        <div class="ctaRow">
+          <a class="btn primary" href="https://arxiv.org/abs/2505.06182" target="_blank" rel="noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            Paper
+          </a>
+
+          <a class="btn" href="#video">Video</a>
+          <a class="btn" href="https://github.com/TimSchneider42/apple/" target="_blank" rel="noreferrer">Code</a>
+        </div>
+
+
+        <!-- ABSTRACT / TL;DR -->
+        <p class="blurb" style="margin-top:14px;">
+          Active perception is a fundamental skill that enables us humans to deal with uncertainty in our inherently
+          partially observable environment.
+          For senses such as touch, where the information is sparse and local, active perception becomes crucial. In
+          recent years, active perception has emerged as an important research domain in robotics.
+          However, current methods are often bound to specific tasks or make strong assumptions, which limit their
+          generality.
+          To address this gap, this work introduces APPLE (Active Perception Policy Learning) - a novel framework that
+          leverages reinforcement learning (RL) to address a range of different active perception problems.
+          APPLE jointly trains a transformer-based perception module and decision-making policy with a unified
+          optimization objective, learning how to actively gather information.
+          By design, APPLE is not limited to a specific task and can, in principle, be applied to a wide range of active
+          perception problems.
+          We evaluate two variants of APPLE across different tasks, including tactile exploration problems from the
+          Tactile MNIST benchmark. Experiments demonstrate the efficacy of APPLE, achieving high accuracies on both
+          regression and classification tasks.
+          These findings underscore the potential of APPLE as a versatile and general framework for advancing active
+          perception in robotics.
+        </p>
+      </div>
+      <!-- ONE LINER -->
+      <div class="oneLiner">
+        <div class="oneLinerTitle">TL;DR</div>
+        <div class="oneLinerText">
+          <b>APPLE is a reinforcement learning framework for solving active perception
+            problems.</b>
+          We evaluate on a range of different tasks, and focus especially on tactile active perception.
+        </div>
+      </div>
+
+
+
+
+      <!-- DEMOS -->
+      <div class="card section" id="demo" style="margin-top:14px;">
+        <h2>Demos: Tasks & Policies</h2>
+        <p>This section provides demos showcasing the capabilities of APPLE policies and baselines on various tasks.</p>
+        <p>Select a <b>Task</b> and a <b>Policy</b> to view the corresponding rollout video.</p>
+
+        <div class="demoTop" style="display:block; margin-bottom: 24px;">
+          <div style="margin-bottom:12px;">
+            <label
+              style="font-family:var(--mono); font-size:12px; color:rgba(28,20,32,.62); margin-bottom:6px; display:block;">Task</label>
+            <div class="seg" id="envBtnContainer" style="gap:8px; flex-wrap:wrap;"></div>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label
+              style="font-family:var(--mono); font-size:12px; color:rgba(28,20,32,.62); margin-bottom:6px; display:block;">Policy</label>
+            <div class="seg" id="methBtnContainer" style="gap:8px; flex-wrap:wrap;"></div>
+          </div>
+
+
+        </div>
+
+        <div>
+          <div
+            style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
+            <div>
+              <h3 id="demoTitle" style="margin:0; color:var(--seed); font-size:18px;">—</h3>
+              <div class="caption" id="demoDesc"
+                style="margin-top:6px; color:var(--muted); line-height:1.5; max-width:800px;">—</div>
+            </div>
+          </div>
+
+          <!-- Grid for Video + Plot -->
+          <div class="viewer">
+            <!-- Video Column -->
+            <div class="viewerMedia" style="background:white;">
+              <video id="demoVideo" loop muted playsinline autoplay
+                style="width:100%; height:100%; object-fit:contain; display:block;"></video>
+            </div>
+
+            <!-- Plot Column -->
+            <div class="viewerPlot" style="display:flex; flex-direction:column;">
+              <div id="demoPlot" style="flex:1; min-height:0;"></div>
+
+              <!-- Metric Buttons Below Plot (Toolbox Only) -->
+              <div id="metricGroup"
+                style="display:none; padding: 12px; border-top: 1px solid rgba(28,20,32,0.1); text-align:center;">
+                <div class="seg" id="metricBtnContainer" style="gap:8px; flex-wrap:wrap; justify-content:center;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPOTLIGHT (method carousel) -->
+      <div class="card section" id="spotlight" style="margin-top:14px;">
+        <div class="blob b3"></div>
+        <h2>Spotlight: APPLE on the Toolbox Environment</h2>
+        <p>
+          Below is a closer look at a learned APPLE-CrossQ policy on the Toolbox environment.
+          In this environment, the agent has to find the pose of the wrench in the workspace from touch alone.
+          We can see that APPLE-CrossQ learned an intelligent policy that decomposes into three distinct phases:
+          First, the agent <b>searches</b> for the wrench in the workspace in a circular search pattern.
+          Then, it <b>establishes initial contact</b>.
+          At this stage, the pose of the wrench is still ambiguous to the agent, as it is not clear in which direction
+          the open end of the wrench points and the agent is also uncertain about its position along the handle.
+          Hence, finally, the agent <b>slides along the handle</b> to resolve this ambiguity and reports the correct
+          pose of the wrench.
+        </p>
+
+        <div class="spotGrid">
+          <div class="spotMedia">
+            <video id="spotVideo" muted playsinline autoplay
+              style="width:100%; height:100%; object-fit:cover; display:block"></video>
+          </div>
+
+          <div class="spotList">
+            <div class="spotItem" id="desc0">
+              <strong>1) Search.</strong> The agent explores the workspace to locate the object.
+            </div>
+            <div class="spotItem" id="desc1">
+              <strong>2) Contact.</strong> It establishes initial contact with the tool.
+            </div>
+            <div class="spotItem" id="desc2">
+              <strong>3) Disambiguation.</strong> It slides along the tool's handle to resolve uncertainty about its
+              pose and orientation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEO SECTION -->
+      <div class="card section video-section" id="video" style="margin-top:14px;">
+        <h2>Video</h2>
+        <div class="video-wrapper">
+          <div class="video-container">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/zwbvK4BcecI?si=BIr2tbvWegydUuBR&rel=0"
+              title="YouTube video player" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          </div>
+        </div>
+
+
+      </div>
+
+      <!-- CITATION -->
+      <div class="card section" id="cite" style="margin-top:14px;">
+        <h2>Citation</h2>
+        <p>If you find APPLE useful, please cite:</p>
+        <div class="cite" style="margin-top:10px;">
+          <pre style="margin:0;"><code class="language-latex" style="background:transparent; padding:0;"><span class="bib-type">@inproceedings</span>{<span class="bib-key">schneider2026apple</span>,
+  <span class="bib-field">title</span>     = {<span class="bib-value">APPLE: Toward General Active Perception via Reinforcement Learning</span>},
+  <span class="bib-field">author</span>    = {<span class="bib-value">Schneider, Tim and de Farias, Cristiana and Calandra, Roberto and Chen, Liming and Peters, Jan</span>},
+  <span class="bib-field">booktitle</span> = {<span class="bib-value">International Conference on Learning Representations (ICLR)</span>},
+  <span class="bib-field">year</span>      = {<span class="bib-value">2026</span>}
+}</code></pre>
+        </div>
+      </div>
+
+      <footer>
+        <!-- AFFILIATION LOGOS -->
+        <div style="display: flex; justify-content: center; align-items: center; gap: 24px; flex-wrap: wrap;">
+          <a href="https://www.ias.informatik.tu-darmstadt.de/" target="_blank" rel="noreferrer">
+            <img src="assets/logos/ias.png" alt="IAS" style="height: 38px; object-fit: contain;">
+          </a>
+          <a href="https://www.tu-darmstadt.de/" target="_blank" rel="noreferrer">
+            <img src="assets/logos/tuda.png" alt="TU Darmstadt" style="height: 48px; object-fit: contain;">
+          </a>
+          <a href="https://liris.cnrs.fr/" target="_blank" rel="noreferrer">
+            <img src="assets/logos/liris.png" alt="LIRIS" style="height: 40px; object-fit: contain;">
+          </a>
+          <a href="https://www.ec-lyon.fr/" target="_blank" rel="noreferrer">
+            <img src="assets/logos/ecl.png" alt="Ecole Centrale de Lyon" style="height: 44px; object-fit: contain;">
+          </a>
+          <a href="https://lasr.org/" target="_blank" rel="noreferrer">
+            <img src="assets/logos/lasr.png" alt="LASR Lab" style="height: 26px; object-fit: contain;">
+          </a>
+          <a href="https://tu-dresden.de/" target="_blank" rel="noreferrer">
+            <img src="assets/logos/tud.png" alt="TU Dresden" style="height: 38px; object-fit: contain;">
+          </a>
+        </div>
+        <a href="https://www.tu-darmstadt.de/impressum/index.en.jsp" target="_blank" rel="noreferrer"
+          style="color:var(--muted); text-decoration:none;">Legal Note</a>
+      </footer>
+
+      <script>
+        // --- Spotlight sequential video ---
+        const v0 = "spotlight/toolbox_crossq_0.mp4";
+        const v1 = "spotlight/toolbox_crossq_1.mp4";
+
+
+        const spotVid = document.getElementById("spotVideo");
+        const sDesc0 = document.getElementById("desc0");
+        const sDesc1 = document.getElementById("desc1");
+        const sDesc2 = document.getElementById("desc2");
+
+        function resetActive() {
+          sDesc0.classList.remove("active");
+          sDesc1.classList.remove("active");
+          sDesc2.classList.remove("active");
+        }
+
+        function play0() {
+          spotVid.src = v0;
+          spotVid.play();
+          resetActive();
+          sDesc0.classList.add("active");
+          spotVid.ontimeupdate = () => {
+            if (spotVid.currentTime > 5.0) {
+              sDesc0.classList.remove("active");
+              sDesc1.classList.add("active");
+            } else {
+              sDesc1.classList.remove("active");
+              sDesc0.classList.add("active");
+            }
+          };
+          spotVid.onended = play1;
+        }
+
+        function play1() {
+          spotVid.src = v1;
+          spotVid.play();
+          resetActive();
+          sDesc2.classList.add("active");
+          spotVid.ontimeupdate = null;
+          spotVid.onended = play0;
+        }
+
+        // kick off spotlight
+        play0();
+
+
+        // --- Demo Section Logic ---
+
+        // Map: User-facing Name -> Directory Code & Description
+        const TASKS = {
+          "TactileMNIST": {
+            id: "tm",
+            desc: "<b>TactileMNIST:</b> Classify 3D models of handwritten digits by touch alone. The agent must learn contour following strategies to identify shapes despite object pose perturbations."
+          },
+          "Toolbox": {
+            id: "to",
+            desc: "<b>Toolbox:</b> A regression task where the agent locates a wrench and estimates its precise 2D position and orientation through sequential tactile exploration."
+          },
+          "TactileMNISTVolume": {
+            id: "tv",
+            desc: "<b>TactileMNISTVolume:</b> Estimate the volume of 3D handwritten digit models using touch. Requires contour following and robustness to small object pose shifts."
+          },
+          "CIFAR10": {
+            id: "cifar10",
+            desc: "<b>CIFAR10:</b> Classify natural images into 10 categories. The agent uses a small movable glimpse to strategically explore and gather information for classification."
+          },
+          "CircleSquare": {
+            id: "cs",
+            desc: "<b>CircleSquare:</b> Determine if an image contains a circle or a square. The agent uses a small movable glimpse to explore the image, guided by a visual gradient."
+          }
+        };
+
+        // Standard policies for most tasks
+        const STANDARD_POLICIES = {
+          "APPLE-CrossQ": "crossq",
+          "APPLE-SAC": "sac",
+          "APPLE-RND": "rand_act"
+        };
+
+        // Extended policies for CircleSquare
+        const CS_POLICIES = {
+          ...STANDARD_POLICIES,
+          "APPLE-CrossQ-LSTM": "crossq_lstm",
+          "APPLE-SAC-LSTM": "sac_lstm",
+          "APPLE-PPO": "ppo",
+
+          "HAM": "ham",
+          "Grid Policy": "grid_policy"
+        };
+
+        // Containers
+        const envBtnContainer = document.getElementById("envBtnContainer");
+        const methBtnContainer = document.getElementById("methBtnContainer");
+        const metricGroup = document.getElementById("metricGroup");
+        const metricBtnContainer = document.getElementById("metricBtnContainer");
+
+        const demoTitle = document.getElementById("demoTitle");
+        const demoDesc = document.getElementById("demoDesc");
+        const demoVideo = document.getElementById("demoVideo");
+
+
+        let currentTask = "TactileMNIST";
+        let currentPolicy = "APPLE-CrossQ";
+        let currentMetric = "Linear"; // "Linear" or "Angular"
+
+        function getPoliciesForTask(taskName) {
+          if (taskName === "CircleSquare") return CS_POLICIES;
+          return STANDARD_POLICIES;
+        }
+
+        function renderTaskButtons() {
+          envBtnContainer.innerHTML = "";
+          Object.keys(TASKS).forEach(k => {
+            const btn = document.createElement("button");
+            btn.className = "chip";
+            if (k === currentTask) btn.classList.add("active");
+            btn.textContent = k;
+            btn.onclick = () => {
+              currentTask = k;
+
+
+              const policies = getPoliciesForTask(currentTask);
+              if (!policies.hasOwnProperty(currentPolicy)) {
+
+                currentPolicy = "APPLE-CrossQ";
+              }
+
+
+
+              renderTaskButtons();
+              renderPolicyButtons();
+              renderMetricButtons();
+              updateDemo();
+            };
+            envBtnContainer.appendChild(btn);
+          });
+        }
+
+        function renderPolicyButtons() {
+          methBtnContainer.innerHTML = "";
+          const policies = getPoliciesForTask(currentTask);
+
+          Object.keys(policies).forEach(pName => {
+            const btn = document.createElement("button");
+            btn.className = "chip";
+
+
+            const style = POLICY_STYLES[pName] || POLICY_STYLES["default"];
+            const color = style.color;
+            const dash = style.dash; // "solid" or "dash"
+
+            // Map Plotly dash to CSS border-style
+            const borderStyle = (dash === "dash") ? "dashed" : "solid";
+
+
+            btn.style.borderColor = color;
+            btn.style.color = color;
+            btn.style.borderWidth = "3px"; // Thicker border
+            btn.style.borderStyle = borderStyle; // Match line style
+
+            if (pName === currentPolicy) {
+              btn.classList.add("active");
+              // Active Style: Fill background
+              btn.style.backgroundColor = color;
+              btn.style.color = "white"; // ensure contrast
+              btn.style.borderStyle = borderStyle;
+              // Ensure dashed border is visible by clipping background to padding box
+              if (borderStyle === "dashed") {
+                btn.style.backgroundClip = "padding-box";
+              } else {
+                btn.style.backgroundClip = "border-box";
+              }
+            } else {
+
+              btn.style.backgroundColor = "transparent";
+              btn.onmouseenter = () => {
+                btn.style.backgroundColor = color;
+                btn.style.color = "white";
+              };
+              btn.onmouseleave = () => {
+                if (currentPolicy !== pName) {
+                  btn.style.backgroundColor = "transparent";
+                  btn.style.color = color;
+                }
+              };
+            }
+
+            btn.textContent = pName;
+            btn.onclick = () => {
+              currentPolicy = pName;
+              renderPolicyButtons();
+              updateDemo();
+            };
+            methBtnContainer.appendChild(btn);
+          });
+        }
+
+        function renderMetricButtons() {
+          if (currentTask !== "Toolbox") {
+            metricGroup.style.display = "none";
+            return;
+          }
+          metricGroup.style.display = "block";
+          metricBtnContainer.innerHTML = "";
+
+          ["Linear", "Angular"].forEach(m => {
+            const btn = document.createElement("button");
+            btn.className = "chip";
+            const label = m + " error";
+            if (m === currentMetric) btn.classList.add("active");
+            btn.textContent = label;
+            btn.onclick = () => {
+              currentMetric = m;
+              renderMetricButtons();
+              updateDemo();
+            };
+            metricBtnContainer.appendChild(btn);
+          });
+        }
+
+        function updateDemo() {
+          const taskObj = TASKS[currentTask];
+          const taskCode = taskObj.id;
+          const policies = getPoliciesForTask(currentTask);
+          const policyFile = policies[currentPolicy];
+
+          demoTitle.textContent = `${currentTask} — ${currentPolicy}`;
+
+
+          if (demoDesc) {
+            demoDesc.innerHTML = taskObj.desc;
+
+            demoDesc.style.display = "block";
+          }
+
+
+          const src = `experiments/videos/${taskCode}/${policyFile}.mp4`;
+          demoVideo.src = src;
+
+
+          renderPlot();
+        }
+
+        // --- Plot Logic ---
+        const PLOT_CACHE = {}; // { task_policy: {x, y, std} }
+        const POLICY_STYLES = {
+          "APPLE-CrossQ": { color: "#1F77B4", dash: "solid" },
+          "APPLE-SAC": { color: "#FF7F0E", dash: "solid" },
+          "APPLE-RND": { color: "#7F7F7F", dash: "solid" },
+          "HAM": { color: "#8C564B", dash: "solid" },
+          "APPLE-PPO": { color: "#9467BD", dash: "solid" },
+          "APPLE-PPO-LSTM": { color: "#9467BD", dash: "dash" },
+          "APPLE-CrossQ-LSTM": { color: "#1F77B4", dash: "dash" },
+          "APPLE-SAC-LSTM": { color: "#FF7F0E", dash: "dash" },
+          "APPLE-CrossQ-PURE-RL": { color: "#1F77B4", dash: "dash" },
+          "APPLE-SAC-PURE-RL": { color: "#FF7F0E", dash: "dash" },
+          "APPLE-CrossQ (sparse)": { color: "#1F77B4", dash: "dash" },
+          "APPLE-SAC (sparse)": { color: "#FF7F0E", dash: "dash" },
+          "APPLE-CrossQ-NO-PRED": { color: "#1F77B4", dash: "dash" },
+          "Grid Policy": { color: "#E377C2", dash: "solid" },
+
+
+          "GRID": { color: "#E377C2", dash: "solid" },
+          "default": { color: "#000000", dash: "solid" }
+        };
+
+        async function fetchPlotData(task, policyName, policyFile, filename) {
+          const key = `${task}_${policyName}_${filename}`;
+          if (PLOT_CACHE[key]) return PLOT_CACHE[key];
+
+          try {
+            const response = await fetch(`experiments/data/${TASKS[task].id}/${policyFile}/${filename}`);
+            if (response.ok) {
+              const text = await response.text();
+              // Parse CSV: x,y_mean,y_std
+              const rows = text.split('\n').slice(1).filter(r => r.trim());
+              const x = [], y = [], std = [];
+              rows.forEach(row => {
+                const cols = row.split(',');
+                if (cols.length >= 3) {
+                  x.push(parseFloat(cols[0]));
+                  y.push(parseFloat(cols[1]));
+                  std.push(parseFloat(cols[2]));
+                }
+              });
+
+              const data = { x, y, std };
+              PLOT_CACHE[key] = data;
+              return data;
+            }
+          } catch (e) {
+
+          }
+          console.warn(`Failed to fetch ${filename} for ${policyName}`);
+          return null;
+        }
+
+        async function renderPlot() {
+          const plotDiv = document.getElementById("demoPlot");
+          const policies = getPoliciesForTask(currentTask);
+          const policyNames = Object.keys(policies);
+
+
+          let yTitle = "Success Rate";
+          let csvFile = "eval_final.csv";
+          let range = null;
+          let xRange = null;
+
+          if (currentTask === "Toolbox") {
+            if (currentMetric === "Angular") {
+              yTitle = "Angular Error (deg)";
+              csvFile = "eval_final_ang.csv";
+            } else {
+              yTitle = "Linear Error (cm)";
+              csvFile = "eval_final_lin.csv";
+            }
+          } else if (currentTask === "TactileMNISTVolume") {
+            yTitle = "Volume (cm³)";
+            csvFile = "eval_final.csv";
+          } else {
+
+            yTitle = "Accuracy";
+            if (currentTask === "CircleSquare") {
+              // CS uses train_final.csv (no eval data)
+              csvFile = "train_final.csv";
+            } else {
+              csvFile = "eval_final.csv";
+            }
+
+
+          }
+
+          const traces = [];
+
+
+          const sortedNames = policyNames.filter(p => p !== currentPolicy).concat([currentPolicy]);
+
+          for (const pName of sortedNames) {
+            const pFile = policies[pName];
+            const data = await fetchPlotData(currentTask, pName, pFile, csvFile);
+            if (!data) continue;
+
+            const style = POLICY_STYLES[pName] || POLICY_STYLES["default"];
+            const color = style.color;
+            const dash = style.dash;
+            const isActive = (pName === currentPolicy);
+
+
+            const traceMain = {
+              x: data.x,
+              y: data.y,
+              mode: 'lines',
+              name: pName,
+              line: {
+                color: color,
+                width: isActive ? 3 : 2,
+                dash: dash
+              },
+              opacity: isActive ? 1 : 0.6
+            };
+            traces.push(traceMain);
+
+            // Shading (Always plot for stability, invisible if inactive)
+            const xRev = [...data.x].reverse();
+            const yUpper = data.y.map((v, i) => v + data.std[i]);
+            const yLower = data.y.map((v, i) => v - data.std[i]).reverse();
+
+            const xPoly = data.x.concat(xRev);
+            const yPoly = yUpper.concat(yLower);
+
+            const traceBand = {
+              x: xPoly,
+              y: yPoly,
+              fill: 'toself',
+              fillcolor: color,
+              line: { color: 'transparent' },
+              name: pName + " (std)",
+              showlegend: false,
+              opacity: isActive ? 0.15 : 0, // Invisible if inactive, but affects auto-scale
+              hoverinfo: 'skip'
+            };
+
+            // Push band before main line so line is on top
+            // Since we push main line first in loop, we can just push band now 
+            // BUT plot order matters: band -> line. 
+            // So we pop the main line, push band, push main line back.
+            traces.pop();
+            traces.push(traceBand);
+            traces.push(traceMain);
+          }
+
+          const layout = {
+            margin: { t: 40, r: 20, l: 60, b: 40 },
+            title: { text: 'Performance', font: { size: 14 } },
+            xaxis: { title: 'Steps', automargin: true },
+            yaxis: { title: yTitle, automargin: true },
+            showlegend: false,
+            legend: { x: 0.02, y: 0.02, xanchor: 'left', yanchor: 'bottom', bgcolor: 'rgba(255,255,255,0.7)' },
+            autosize: true
+          };
+
+          if (range) {
+            layout.yaxis.range = range; // likely null now
+          }
+          if (xRange) {
+            layout.xaxis.range = xRange;
+          }
+
+          const config = { responsive: true, displayModeBar: false };
+
+          Plotly.react(plotDiv, traces, layout, config);
+        }
+
+
+        renderTaskButtons();
+        renderPolicyButtons();
+        updateDemo();
+
+        document.getElementById("year").textContent = new Date().getFullYear();
+      </script>
+</body>
+
+</html>
