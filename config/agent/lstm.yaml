@@ -1,0 +1,9 @@
+defaults:
+  - default
+
+act_fn: RELU
+model_config: [ l1, l1, l1 ]
+rnn_memory_dims: 64
+rnn_embedding_hidden_dims:
+  - 64
+  - 64

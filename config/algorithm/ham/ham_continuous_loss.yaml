@@ -1,0 +1,8 @@
+# @package algorithm
+
+# HAM always does one gradient step per 64 full episodes. However, we deviate here as we found this batch size to be
+# more sample efficient and stable.
+batch_size: 4
+
+# Overrides
+classification_binary_reward: false

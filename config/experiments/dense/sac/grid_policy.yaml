@@ -1,0 +1,8 @@
+# @package _global_
+
+defaults:
+  - random_act
+  - _self_
+
+algorithm:
+  control_strategy: GRID_2D

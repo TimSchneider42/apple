@@ -1,0 +1,25 @@
+defaults:
+  - lstm
+  - override image_encoder: ham
+
+observe_actions: true
+rnn_memory_dims: 256
+rnn_embedding_hidden_dims:
+  - 128
+  - 256
+  - 256
+act_std_use_log_scale: false
+act_std_allowed_bounding_fns:
+  - SIGMOID
+  - SOFTPLUS
+  - NONE
+act_log_std_min: -Infinity
+act_log_std_max: 0
+act_bound_mean: true
+act_mean_allowed_bounding_fns:
+  - TANH
+  - SOFTPLUS
+  - NONE
+
+# They don't say this explicitly, but this is what is happening in their code.
+constrained_normal_type: TRUNCATED

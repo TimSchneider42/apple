@@ -1,0 +1,33 @@
+[project]
+name = "apple"
+version = "1.0.0"
+description = "Official code release for our paper 'APPLE: Toward General Active Perception via Reinforcement Learning'."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "distrax>=0.1.5",
+    "flax>=0.10.7",
+    "h5py>=3.16.0",
+    "hydra-core>=1.3.2",
+    "moviepy<2.0.0",
+    "optax>=0.2.8",
+    "orbax-checkpoint>=0.11.39",
+    "tactile-mnist[jax]>=0.12.0",
+    "tensorboard>=2.20.0",
+    "torch>=2.12.0",
+    "wandb[media]>=0.27.0",
+]
+license = "MIT"
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu" },
+]
+torchvision = [
+    { index = "pytorch-cpu" },
+]

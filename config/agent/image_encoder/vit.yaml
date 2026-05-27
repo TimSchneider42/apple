@@ -1,0 +1,21 @@
+defaults:
+  - base
+  - vit_schema
+  - /transformer@transformer: default
+  - transformer/vit_overrides
+  - _self_
+
+# Patch size for the ViT model.
+patch_size: 8
+
+# Add a final layer norm in the ViT model.
+add_final_layer_norm: false
+
+# Number of hidden dimensions in the image encoder.
+embedding_dims: 32
+
+# Normalization to use after patch embedding.
+patch_normalization: NONE
+
+# Whether to use absolute positional embeddings
+use_abs_positional_embeddings: true

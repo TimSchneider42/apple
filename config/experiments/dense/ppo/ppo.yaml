@@ -1,0 +1,18 @@
+# @package _global_
+
+defaults:
+  - base
+  - /algorithm/ppo/transformer_dense
+  - _self_
+
+algorithm:
+  pg_coef: 0.24366512530575432
+  ent_coef: 0.10183484890107296
+  vf_coef: 3.6505666899961824
+  p_coef: 29.292783067889683
+  update_to_data_ratio: 0.07350266997999763
+
+  optimizer:
+    learning_rate:
+      value: 2.9695768970045628e-05
+    max_grad_norm: 6918.258967999205

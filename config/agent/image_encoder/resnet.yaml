@@ -1,0 +1,12 @@
+defaults:
+  - base
+  - resnet_schema
+
+# Number of hidden dimensions in the image encoder.
+hidden_dims: 256
+
+# Number of intermediate dimensions in the image encoder.
+intermediate_dims: 128
+
+# Number of hidden layers in the image encoder.
+hidden_layers: 6

@@ -1,0 +1,5 @@
+# Target image size for the image encoder.
+target_image_size: 32
+
+# Target format for the image encoder.
+target_image_format: RGB

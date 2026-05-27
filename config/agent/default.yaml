@@ -1,0 +1,78 @@
+defaults:
+  - image_encoder: dense
+  - /transformer/default
+
+# Number of dimensions of the latent space of the RNN model.
+rnn_memory_dims: 64
+
+# Hidden dimensions of the embedding encoder of the RNN-based model.
+rnn_embedding_hidden_dims:
+  - 64
+  - 64
+
+# Activation function for neural networks.
+act_fn: RELU
+
+# Use orthogonal layer initialization.
+orthogonal_layer_init: true
+
+# Size of the observation/action embeddings for the transformer.
+trans_embedding_dims: 128
+
+# Which normalization to use for the inputs of the transformer.
+trans_input_normalization: NONE
+
+# Number of layers of the SimpleSequenceEncoder.
+simple_layer_count: 2
+
+# Number hidden dimensions of the SimpleSequenceEncoder.
+simple_hidden_dims: 64
+
+# Which normalization to use in the SimpleSequenceEncoder.
+simple_norm: NONE
+
+# Observe actions in the memory model.
+observe_actions: false
+
+# Model configuration to use for policy, predictor, and value function.
+model_config: [ s1, s1, s2 ]
+
+# Use log scale for the standard deviation of the normal distribution in actor heads.
+act_std_use_log_scale: true
+
+# Allowed bounding functions for the standard deviations of the normal distributions in actor heads.
+act_std_allowed_bounding_fns:
+  - TANH
+  - SOFTPLUS
+  - NONE
+
+# Minimum standard deviation for the normal distribution in actor heads.
+act_log_std_min: -5
+
+# Maximum standard deviation for the normal distribution in actor heads.
+act_log_std_max: 2
+
+# Allowed bounding functions for the means of the normal distributions in actor heads.
+act_mean_allowed_bounding_fns:
+  - TANH
+  - SOFTPLUS
+  - NONE
+
+# Whether to bound the mean of the normal distribution in actor heads.
+act_bound_mean: false
+
+# Which constrained normal distribution to use in the actor head.
+constrained_normal_type: NONE
+
+# Minimum number of pixels in the image. If an image has less than this number of pixels, it will be treated as a dense
+# input.
+image_min_pixels: 101
+
+# Normalization to apply to the inputs before embedding.
+input_normalization: NONE
+
+# Whether to use sinusoidal positional encodings in the transformer encoder
+use_sinusoidal_pos_enc: true
+
+# Whether to scale the transformer inputs by the inverse square root of the embedding dimension
+trans_scale_inputs: true

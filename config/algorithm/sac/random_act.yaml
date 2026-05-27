@@ -1,0 +1,5 @@
+# @package algorithm
+use_target_networks: false
+control_strategy: RANDOM
+a_coef: 0.0
+disable_critic_update: true

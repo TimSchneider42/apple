@@ -1,0 +1,6 @@
+# @package _global_
+
+defaults:
+  - /algorithm: ppo
+  - ../../base
+  - _self_

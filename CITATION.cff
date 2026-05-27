@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: Please cite the following works when using this software.
+preferred-citation:
+  authors:
+    - family-names: Schneider
+      given-names: Tim
+    - family-names: Farias
+      given-names: Cristiana
+      name-particle: de
+    - family-names: Calandra
+      given-names: Roberto
+    - family-names: Chen
+      given-names: Liming
+    - family-names: Peters
+      given-names: Jan
+  title: 'APPLE: Toward General Active Perception via Reinforcement Learning'
+  date-published: 2026-04-23
+  year: 2026
+  journal: International Conference on Learning Representations (ICLR)
+  type: conference-paper

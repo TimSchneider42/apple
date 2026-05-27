@@ -1,0 +1,20 @@
+# Hidden dimensions
+hidden_dims: 64
+
+# Number of heads
+num_heads: 8
+
+# Which normalization to use
+normalization: LAYER_NORM
+
+# Number of layers
+layer_count: 3
+
+# Which attention function implementation to use
+attention_fn: AUTO
+
+# Whether to use softmax scaling in the attention function
+apply_softmax_scaling: true
+
+# Dropout rate to use in the attention blocks
+attention_dropout_rate: 0.1

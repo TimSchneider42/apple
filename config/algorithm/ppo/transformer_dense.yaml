@@ -1,0 +1,17 @@
+# @package algorithm
+
+defaults:
+  - transformer_base
+  - _self_
+
+pg_coef: 0.00020161902705074288
+ent_coef: 0.00037024326519821866
+vf_coef: 0.0012948496199335284
+p_coef: 0.5393709834085033
+update_to_data_ratio: 0.05651614486942201
+
+optimizer:
+  type: ADAMW
+  learning_rate:
+    value: 3.1011192557685365e-05
+  max_grad_norm: 33.114710432231725

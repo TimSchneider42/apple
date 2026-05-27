@@ -1,0 +1,5 @@
+defaults:
+  - dense
+
+target_image_size: 16
+target_image_format: GRAYSCALE

@@ -1,0 +1,19 @@
+# @package _global_
+
+defaults:
+  - base
+  - /algorithm/ppo/lstm_dense
+  - _self_
+
+algorithm:
+  pg_coef: 17.68837010234941
+  ent_coef: 3.701518113841988e-07
+  vf_coef: 1.6418621094182518e-05
+  p_coef: 1149.6836263898938
+  update_to_data_ratio: 0.423611214277209
+
+  optimizer:
+    learning_rate:
+      schedule_type: LINEAR
+      value: 1.1343910998046598e-06
+    max_grad_norm: 0.187748200343723

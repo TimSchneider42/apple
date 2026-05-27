@@ -1,0 +1,17 @@
+# @package algorithm
+defaults:
+  - base
+  - _self_
+
+policy_interval: 2
+policy_update_steps: 2
+critic_hidden_dims: 256
+
+actor_optimizer:
+  adam_b1: 0.9
+
+critic_optimizer:
+  adam_b1: 0.9
+
+alpha_optimizer:
+  adam_b1: 0.9

@@ -1,0 +1,6 @@
+# @package _global_
+
+defaults:
+  - base
+  - /algorithm/sac/sac/transformer_dense
+  - _self_

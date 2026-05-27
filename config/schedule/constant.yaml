@@ -1,0 +1,17 @@
+# The (maximum) value of the schedule
+value: 1.0
+
+# Which schedule to use
+schedule_type: CONSTANT
+
+# The initial value of the schedule
+initial_value: 0.0
+
+# The final value of the schedule
+final_value: 0.0
+
+# The share of the warmup steps in the total number
+warmup_rel: 0.0
+
+# The decay rate for the exponential schedule
+exp_decay_rate: 0.97

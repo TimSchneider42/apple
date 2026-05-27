@@ -1,0 +1,155 @@
+defaults:
+  - base
+  - sac_schema
+  - /optimizer/default@actor_optimizer
+  - /optimizer/default@critic_optimizer
+  - /optimizer/default@alpha_optimizer
+  - /schedule/constant@target_entropy_scale_discrete
+  - /schedule/constant@target_entropy_scale_continuous
+  - /schedule/constant@eps_greedy_target_entropy_mode_epsilon
+  - /agent/default
+
+# The number of batched environment steps per iteration
+batch_env_steps_per_iteration: 1
+
+# The ratio of update steps to environment steps
+update_to_data_ratio: 1.0
+
+# The initial ratio of update steps to environment steps. Linearly annealed to target during UTD warmup steps
+initial_utd: null
+
+# The relative number of steps to linearly anneal the UTD ratio to the target value
+utd_warmup_steps_rel: 0.2
+
+# Number of samples to evaluate in parallel during training
+batch_size: 256
+
+# The size of the replay buffer
+buffer_size: -1
+
+# The discount factor gamma
+gamma: 0.99
+
+# Target smoothing coefficient
+tau: 0.005
+
+# The interval of training policy (delayed)
+policy_interval: 2
+
+# For how many steps to train the policy on the same batch
+policy_update_steps: 1
+
+# The interval of updates for the target networks
+target_network_interval: 1
+
+# Noise clip parameter of the Target Policy Smoothing Regularization
+noise_clip: 0.5
+
+# Entropy regularization coefficient
+alpha: 0.2
+
+# Automatic tuning of the entropy coefficient
+autotune: true
+
+# Coefficient for scaling the autotune entropy target for discrete actions
+target_entropy_scale_discrete:
+  value: 0.89
+
+# Coefficient for scaling the autotune entropy target for continuous actions
+target_entropy_scale_continuous:
+  value: 1.0
+
+# Embedding dimension of the action and hint of the Q-function (None means no embedding)
+critic_action_hint_embedding_dims: null
+
+# Embedding dimension of the state of the Q-function (None means no embedding)
+critic_state_embedding_dims: null
+
+# Hidden dimensions of the Q-function (None means take the sum of action-hint and state embedding dimensions
+critic_hidden_dims: 256
+
+# Number of hidden layers in the Q function
+critic_hidden_layers: 2
+
+# Activation function for the Q function
+critic_activation: relu
+
+# Which norm to use in the critic
+critic_norm: NONE
+
+# Which norm to use for the action-hint inputs of the critic
+critic_action_hint_norm: NONE
+
+# Which norm to use for the state input of the critic
+critic_state_norm: NONE
+
+# Which norm to use for the state/action-hint encodings of the critic
+critic_post_enc_norm: NONE
+
+# Use skip connections in the Q function
+critic_skip_connections: false
+
+# Coefficient of the regular actor loss
+a_coef: 1.0
+
+# Coefficient of the prediction loss
+p_coef: 1.0
+
+# Use target networks for the Q function
+use_target_networks: true
+
+# Compute targets in train mode instead of eval. Faster but leads to different targets with batch norm
+compute_targets_in_train_mode: true
+
+# Provide the prediction target as a hint to the critic
+use_critic_hints: false
+
+# Use target networks for the sequence encoders
+encoder_use_target_networks: true
+
+# Disable the critic update
+disable_critic_update: false
+
+# Number of Q functions in the ensemble
+q_ensemble_size: 2
+
+# Interval (in number of actor update steps) at which to update the alpha parameter
+alpha_update_interval: 1
+
+# Whether to keep the critic in training mode during the actor update
+critic_use_training_mode_during_actor_update: false
+
+# How to compute the discrete target entropy. Default is scale * ln(|A|), hence scale share of the maximum possible
+# entropy. Epsilon greedy based computes the target entropy such that the stochastic policy is at least as
+# stochastic as an epsilon-greedy policy.
+# See https://discuss.ray.io/t/target-entropy-in-discrete-sac-implementation/12182
+discrete_target_entropy_mode: DEFAULT
+
+# Epsilon for the epsilon greedy based target entropy mode.
+eps_greedy_target_entropy_mode_epsilon:
+  value: 0.975
+
+# Overrides
+learning_starts: 5000
+
+agent:
+  model_config: [ s1, s1, n1 ]
+  simple_hidden_dims: 256
+  simple_layer_count: 2
+  orthogonal_layer_init: false
+  constrained_normal_type: SAC
+
+# The optimizer configuration for the actor
+actor_optimizer:
+  learning_rate:
+    value: 1e-3
+
+# The optimizer configuration for the critic
+critic_optimizer:
+  learning_rate:
+    value: 1e-3
+
+# The optimizer configuration for the alpha parameter
+alpha_optimizer:
+  learning_rate:
+    value: 1e-3

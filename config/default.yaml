@@ -1,0 +1,57 @@
+hydra:
+  run:
+    dir: ${unique_dir:${base_output_dir}/${now:%Y-%m-%d_%H-%M-%S},__${env_id}__${hydra:job.name}__${seed}}
+
+# Base output directory, in which an unqiue directory will be placed
+base_output_dir: "${project_root:}/runs/current"
+
+# Seed of the experiment
+seed: null
+
+# If set, this experiment will be tracked with Weights and Biases
+wandb: False
+
+# The wandb's project name
+wandb_project_name: "apple"
+
+# The entity (team) of wandb's project
+wandb_entity: null
+
+# Group of this experiment
+wandb_group: null
+
+# Subgroup of this experiment
+wandb_subgroup: null
+
+# Supergroup of this experiment
+wandb_supergroup: null
+
+# The ID of the environment
+env_id: "CartPole-v1"
+
+# Disables JAX JIT compilation
+no_jit: False
+
+# Number of environments to run in parallel
+num_envs: 4
+
+# Use a separate environment for evaluation
+use_eval_env: False
+
+# ID of the evaluation environment. Defaults to the training environment
+eval_env_id: null
+
+# Enable persistent JIT cache (disabled as it is very unstable, see https://github.com/openxla/xla/issues/33220)
+enable_persistent_jit_cache: false
+
+# If set, only evaluation will be performed
+evaluation_mode: false
+
+# Number of steps per checkpoint in evaluation mode
+evaluation_mode_num_steps_per_cp: 100
+
+# Additional keyword arguments for the training environment
+env_kwargs: { }
+
+# Additional keyword arguments for the evaluation environment
+eval_env_kwargs: null

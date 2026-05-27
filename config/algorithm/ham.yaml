@@ -1,0 +1,24 @@
+defaults:
+  - base
+  - ham_schema
+  - /optimizer/ham
+  - /agent/ham
+
+# The discount factor
+gamma: 0.99
+
+# The coefficient weighting between policy loss and prediction loss
+beta: 0.4
+
+# Note that the paper claims to use 1.0 here, but the code, due to a bug, I think uses 0.1 (because it is dividing this
+# loss by the number of glances, which is 10, apparently erroneously assuming that they took the sum not mean over
+# glances before). However, 1.0 works better empirically, so we stay with that.
+# The coefficient weighting the value loss
+value_loss_coeff: 1.0
+
+# HAM takes one gradient update for each batch_size episodes
+batch_size: 64
+
+# Overrides
+reset_env_between_iterations: true
+classification_binary_reward: true

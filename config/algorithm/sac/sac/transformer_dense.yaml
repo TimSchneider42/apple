@@ -1,0 +1,27 @@
+# @package algorithm
+defaults:
+  - ../transformer_base
+  - apple_base
+  - _self_
+
+batch_size: 32
+
+update_to_data_ratio: 4.0
+initial_utd: 0.75
+utd_warmup_steps_rel: 0.9
+critic_norm: NONE
+
+actor_optimizer:
+  type: ADAMW
+  learning_rate:
+    value: 5e-5
+
+critic_optimizer:
+  type: ADAMW
+  learning_rate:
+    value: 5e-4
+
+alpha_optimizer:
+  type: ADAMW
+  learning_rate:
+    value: 5e-4

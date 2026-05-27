@@ -1,0 +1,29 @@
+# @package algorithm
+defaults:
+  - ../lstm_base
+  - apple_base
+  - _self_
+
+batch_size: 32
+
+update_to_data_ratio: 4.749407234489045
+initial_utd: 2.324022838681513
+utd_warmup_steps_rel: 1.0
+
+actor_optimizer:
+  type: ADAMW
+  learning_rate:
+    value: 1.432875888690191e-06
+  max_grad_norm: 41.01203711786277
+
+critic_optimizer:
+  type: ADAMW
+  learning_rate:
+    value: 0.00024080346198693034
+  max_grad_norm: 41.01203711786277
+
+alpha_optimizer:
+  type: ADAMW
+  learning_rate:
+    value: 0.00024080346198693034
+  max_grad_norm: 41.01203711786277

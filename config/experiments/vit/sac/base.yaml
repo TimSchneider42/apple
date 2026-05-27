@@ -1,0 +1,9 @@
+# @package _global_
+
+defaults:
+  - /algorithm: sac
+  - ../../base
+  - _self_
+
+algorithm:
+  buffer_size: 1250000

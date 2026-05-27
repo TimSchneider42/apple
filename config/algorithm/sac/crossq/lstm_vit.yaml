@@ -1,0 +1,31 @@
+# @package algorithm
+defaults:
+  - ../lstm_base
+  - apple_base
+  - override /agent/image_encoder@agent.image_encoder: vit
+  - _self_
+
+batch_size: 8
+
+update_to_data_ratio: 3.008177767510731
+initial_utd: 1.4721575187452722
+utd_warmup_steps_rel: 0.5
+critic_norm: LAYER_NORM
+
+actor_optimizer:
+  type: ADAMW
+  learning_rate:
+    value: 1.0649358677717924e-05
+  max_grad_norm: 6329.489931820099
+
+critic_optimizer:
+  type: ADAMW
+  learning_rate:
+    value: 6.921291606875922e-06
+  max_grad_norm: 6329.489931820099
+
+alpha_optimizer:
+  type: ADAMW
+  learning_rate:
+    value: 6.921291606875922e-06
+  max_grad_norm: 6329.489931820099

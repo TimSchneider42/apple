@@ -1,0 +1,8 @@
+# @package algorithm
+
+policy_interval: 2
+policy_update_steps: 2
+
+actor_optimizer:
+  learning_rate:
+    value: 3e-4

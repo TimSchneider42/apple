@@ -1,0 +1,25 @@
+defaults:
+  - /schedule/constant@learning_rate
+  - _self_
+
+# The learning rate of the optimizer.
+learning_rate:
+  value: 2.5e-4
+
+# Which optimizer to use. Choices: ADAM, ADAMW, SGD, SF_ADAMW, RMSPROP
+type: ADAM
+
+# Whether to use a binary step (-1, 1) for the optimizer. Essentially chaining a signum function to the optimizer
+binary_step: false
+
+# The epsilon value for the Adam optimizer
+adam_eps: 1e-8
+
+# The b1 value for the ADAM optimizer
+adam_b1: 0.9
+
+# The momentum for the SGD optimizer
+sgd_momentum: null
+
+# The maximum norm for the gradient clipping
+max_grad_norm: inf

@@ -1,0 +1,10 @@
+# @package algorithm
+defaults:
+  - /algorithm/pomdp
+  - _self_
+
+critic_skip_connections: true
+critic_norm: LAYER_NORM
+
+agent:
+  model_config: [ t1, t1, t1 ]

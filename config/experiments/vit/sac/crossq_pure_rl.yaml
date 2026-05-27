@@ -1,0 +1,8 @@
+# @package _global_
+
+defaults:
+  - crossq
+  - _self_
+
+algorithm:
+  treat_ap_gym_env_as_gym_env: true

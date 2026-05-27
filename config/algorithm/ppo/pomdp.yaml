@@ -1,0 +1,5 @@
+# @package algorithm
+defaults:
+  - /algorithm/pomdp
+
+reset_env_between_iterations: true

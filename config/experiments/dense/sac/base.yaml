@@ -1,0 +1,6 @@
+# @package _global_
+
+defaults:
+  - /algorithm: sac
+  - ../../base
+  - _self_

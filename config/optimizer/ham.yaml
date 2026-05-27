@@ -1,0 +1,11 @@
+defaults:
+  - default
+
+type: SGD
+sgd_momentum: 0.9
+learning_rate:
+  schedule_type: EXPONENTIAL
+  value: 0.0008
+
+# Taken from their code
+  final_value: 0.00037358

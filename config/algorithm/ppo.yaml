@@ -1,0 +1,50 @@
+defaults:
+  - base
+  - ppo_schema
+  - /optimizer/default
+  - /agent/default
+
+# The discount factor gamma
+gamma: 0.99
+
+# The lambda for the general advantage estimation
+gae_lambda: 0.95
+
+# The ratio of update steps to environment steps
+update_to_data_ratio: 0.03125
+
+# Toggles advantages normalization
+norm_adv: true
+
+# The surrogate clipping coefficient
+clip_coef: 0.2
+
+# Toggles whether to use a clipped loss for the value function, as per the paper
+clip_vloss: true
+
+# Coefficient of the policy loss
+pg_coef: 1.0
+
+# Coefficient of the entropy
+ent_coef: 0.01
+
+# Coefficient of the value function
+vf_coef: 0.5
+
+# Coefficient of the prediction loss
+p_coef: 1.0
+
+# The target KL divergence threshold
+target_kl: null
+
+# Number of samples to evaluate in parallel during training
+batch_size: 64
+
+# The number of batched environment steps per iteration
+batch_env_steps_per_iteration: 2048
+
+# Overrides
+optimizer:
+  max_grad_norm: 0.5
+agent:
+  act_fn: TANH

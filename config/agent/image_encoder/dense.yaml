@@ -1,0 +1,9 @@
+defaults:
+  - base
+  - dense_schema
+
+# Target image size for the image encoder.
+target_image_size: -1
+
+# Target format for the image encoder.
+target_image_format: AS_IS

@@ -1,0 +1,8 @@
+# @package algorithm
+defaults:
+  - /algorithm/pomdp
+  - /agent@agent: lstm
+  - _self_
+
+agent:
+  model_config: [ l1, l1, l1 ]

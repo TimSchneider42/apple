@@ -1,0 +1,14 @@
+# @package _global_
+
+defaults:
+  - /default
+  - _self_
+
+wandb: false
+use_eval_env: true
+num_envs: 4
+
+algorithm:
+  total_env_steps: 5000000
+  video_log_count: 100
+  eval_every: 100

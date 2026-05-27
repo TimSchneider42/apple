@@ -1,0 +1,92 @@
+defaults:
+  - _self_
+
+# Maximum number of steps the environment is allowed to take before it has to reset
+max_episode_steps: null
+
+# Total number of timesteps for training
+total_env_steps: 500000
+
+# Number of steps to take in the environment in this training segment
+env_steps: null
+
+# Evaluate the agent every n episodes on the evaluation environment if given
+eval_every: 10
+
+# Minimum standard deviation of the observation normalizer
+obs_norm_min_std: 0.1
+
+# Minimum standard deviation of the action normalizer
+act_norm_min_std: 0.1
+
+# If set, the environment will be reset between episodes
+reset_env_between_iterations: false
+
+# Number of videos to log during training
+video_log_count: 10
+
+# Number of steps for which statistics get logged during training
+stat_log_count: 1000
+
+# Number of steps for which metrics get logged during training
+metrics_log_count: 1000
+
+# Smoothing factor used for printing the rewards
+print_smoothing_factor: 0.99
+
+# Interval in which to print the rewards
+print_interval: 500
+
+# Which control strategy to use. Options are
+# - POLICY: use the policy of the agent
+# - RANDOM: use random actions
+# - GRID_2D: use a 2D grid motion pattern
+control_strategy: POLICY
+
+# Maximum side length of the images stored in the replay buffer
+replay_buffer_max_image_size: 32
+
+# Datatype of the images stored in the replay buffer
+replay_buffer_img_dtype: U8
+
+# Number of steps before the agent starts learning
+learning_starts: 0
+
+# Number of checkpoints to keep
+intermediate_checkpoint_count: 0
+
+# If set, the agent will save checkpoints during training
+save_checkpoints: false
+
+# If set, the agent will store the replay buffer in the checkpoint
+checkpoint_store_trajectory_buffer: true
+
+# Number of intermediate model resets to perform during training
+num_intermediate_model_resets: 0
+
+# Maximum memory horizon to use in the encoder model. Is ignored by LSTM model (which might make it act weird, as it
+# will be rolled out on longer sequences than it was trained on). If None, the full episode is used.
+max_memory_horizon: 1
+
+# Whether to profile JAX
+profile: false
+
+# Whether to create a Perfetto link when profiling
+profile_create_perfetto_link: false
+
+# Postprocess the classification reward to be 0/1 instead of the cross-entropy
+classification_binary_reward: false
+
+# If set, the environments will be treated as if they were regular gymnasium environments. Effectively, for ap_gym
+# environments, it will treat the prediction output as extra action components, and ignore the loss function. To
+# facilitate critic hints, the perception target space will be retained.
+treat_ap_gym_env_as_gym_env: false
+
+# Whether to use the rendering of the environment as observation
+use_rendering_as_observation: false
+
+# To which degree to log metrics
+metric_log_level: BASIC
+
+# Whether to interpret the final (timeout) truncation in an episode as a termination signal for the agent.
+interpret_final_truncation_as_termination: false

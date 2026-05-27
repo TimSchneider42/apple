@@ -1,0 +1,4 @@
+num_heads: 8
+hidden_dims: 32
+layer_count: 4
+attention_fn: FLAX

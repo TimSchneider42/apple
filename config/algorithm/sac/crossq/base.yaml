@@ -1,0 +1,20 @@
+# @package algorithm
+
+use_target_networks: false
+critic_norm: BATCH_NORM
+critic_action_hint_norm: BATCH_NORM
+critic_state_norm: BATCH_NORM
+policy_interval: 3
+critic_hidden_dims: 2048
+
+agent:
+  simple_norm: BATCH_NORM
+
+actor_optimizer:
+  adam_b1: 0.5
+
+critic_optimizer:
+  adam_b1: 0.5
+
+alpha_optimizer:
+  adam_b1: 0.5

@@ -1,0 +1,34 @@
+# @package algorithm
+defaults:
+  - ../transformer_base
+  - apple_base
+  - override /agent/image_encoder@agent.image_encoder: vit
+  - _self_
+
+batch_size: 8
+
+update_to_data_ratio: 1.5
+initial_utd: 0.25
+utd_warmup_steps_rel: 0.4
+critic_norm: BATCH_RENORM
+
+actor_optimizer:
+  type: ADAMW
+  learning_rate:
+    schedule_type: COSINE
+    value: 5e-4
+    warmup_rel: 0.15
+
+critic_optimizer:
+  type: ADAMW
+  learning_rate:
+    schedule_type: COSINE
+    value: 5e-5
+    warmup_rel: 0.15
+
+alpha_optimizer:
+  type: ADAMW
+  learning_rate:
+    schedule_type: COSINE
+    value: 5e-5
+    warmup_rel: 0.15
